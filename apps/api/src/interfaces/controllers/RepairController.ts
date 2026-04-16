@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { DeviceModel } from "../../infrastructure/models/DeviceModel.ts";
 import { DeviceStatus } from "../../core/interfaces/IDevice.ts";
+import { NotificationService } from "../../use-cases/NotifyClient.ts";
 
 export class RepairController {
   // Crear nuevo ingreso
@@ -31,7 +32,8 @@ export class RepairController {
       const { id } = req.params;
       const { status, description, diagnostic, category } = req.body;
 
-      const device = await DeviceModel.findById(id);
+      // Hacemos populate de ownerId para obtener los datos del cliente (IUser)
+      const device = await DeviceModel.findById(id).populate("ownerId");
       if (!device) return res.status(404).json({ message: "Device not found" });
 
       // Actualizamos campos principales
@@ -39,17 +41,26 @@ export class RepairController {
       if (diagnostic) device.technicalDiagnostic = diagnostic;
       if (category) device.commonFaultCategory = category;
 
+      const owner = device.ownerId as any;
+
       // Agregamos al historial para el Timeline
       device.repairHistory.push({
         status,
         description,
-        updatedBy: (req as any).user.id,
+        updatedBy: (req as any).user.id as string,
         updatedAt: new Date(),
       });
 
       await device.save();
 
-      // TODO: Aquí dispararemos la notificación de WhatsApp/Email en el siguiente Sprint
+      // Disparar notificación asíncrona (no bloquea la respuesta del servidor)
+      NotificationService.notifyStatusChange({
+        to: owner.phoneNumber, // Asumiendo que hiciste el populate del owner
+        customerName: owner.fullName,
+        deviceName: `${device.brand} ${device.model}`,
+        status: status,
+        link: `https://tuapp.com/track/${device._id}`,
+      });
 
       res.json(device);
     } catch (error) {
