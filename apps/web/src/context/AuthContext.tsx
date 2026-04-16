@@ -1,7 +1,13 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState /*,
+  useContext*/ /*,useEffect*/,
+} from "react";
 import { useNavigate } from "react-router-dom";
+import type { User, AuthContextType } from "./AuthTypes";
+export type { useAuth } from "./useAuth";
 
-interface User {
+/*interface User {
   id: string;
   fullName: string;
   role: string;
@@ -12,19 +18,22 @@ interface AuthContextType {
   login: (token: string, user: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
-}
+}*/
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const navigate = useNavigate();
 
   // Al cargar la app, verificamos si hay una sesión activa
-  useEffect(() => {
+  /*useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) setUser(JSON.parse(savedUser));
-  }, []);
+  }, []);*/
 
   const login = (token: string, user: User) => {
     localStorage.setItem("token", token);
@@ -51,8 +60,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useAuth = () => {
+export { AuthContext };
+
+/*export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
-};
+};*/
