@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { IInventoryItem } from "../../core/interfaces/IInventory";
+import type { IInventoryItem } from "../../core/interfaces/IInventory.ts";
 
 const InventorySchema = new Schema<IInventoryItem>(
   {
