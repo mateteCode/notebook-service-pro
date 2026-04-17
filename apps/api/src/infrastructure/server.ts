@@ -1,10 +1,22 @@
-import express, { Application } from "express";
+import express, { type Application } from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+
+// Importación de rutas
+import authRoutes from "../interfaces/routes/authRoutes.ts";
+import repairRoutes from "../interfaces/routes/repairRoutes.ts";
+import statsRoutes from "../interfaces/routes/statsRoutes.ts";
 
 class Server {
   private app: Application;
   private port: string;
+
+  // Definimos los paths de las rutas para mantener orden
+  private apiPaths = {
+    auth: "/api/auth",
+    repairs: "/api/repairs",
+    stats: "/api/stats",
+  };
 
   constructor() {
     this.app = express();
@@ -19,9 +31,10 @@ class Server {
   async connectDB() {
     try {
       await mongoose.connect(process.env.MONGO_URI || "");
-      console.log("Database connected successfully");
+      console.log("✅ Database connected");
     } catch (error) {
-      console.error("Error connecting to database:", error);
+      console.error("❌ Database connection error:", error);
+      process.exit(1); // Cerramos el proceso si no hay DB
     }
   }
 
@@ -31,7 +44,11 @@ class Server {
   }
 
   routes() {
-    // Aquí irán las rutas más adelante
+    // Montamos las rutas en sus respectivos paths
+    this.app.use(this.apiPaths.auth, authRoutes);
+    this.app.use(this.apiPaths.repairs, repairRoutes);
+    this.app.use(this.apiPaths.stats, statsRoutes);
+
     this.app.get("/api/health", (req, resentment) => {
       resentment
         .status(200)
