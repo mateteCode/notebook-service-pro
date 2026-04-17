@@ -1,6 +1,9 @@
-// En: apps/web/src/App.tsx
-
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { LoginPage } from "./pages/LoginPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -10,6 +13,7 @@ function App() {
     <Router>
       <AuthProvider>
         <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginPage />} />
 
           {/* Rutas para Técnicos y Admin */}
@@ -30,6 +34,10 @@ function App() {
                 <h1 className="p-10 text-2xl">Mis Reparaciones</h1>
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="*"
+            element={<div className="p-10">404 - Página no encontrada</div>}
           />
         </Routes>
       </AuthProvider>
