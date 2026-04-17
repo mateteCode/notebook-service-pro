@@ -1,0 +1,21 @@
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+# Pegar el token obtenido del test de auth
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ1MTAyMywiZXhwIjoxNzc2NDc5ODIzfQ.Zop8gs5zdTcOVWZ9bK1-6j59onTB847MSYGBffO0xfY
+
+### Buscar clientes (por nombre o email)
+GET {{baseUrl}}/users/search?q=Juan
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+### Crear un nuevo cliente (opcional, si querés probar la creación)
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+    "email": "juan.gonzalez@email.com",
+    "password": "password123",
+    "fullName": "Juan Gonzalez",
+    "role": "CUSTOMER",
+    "phoneNumber": "1144556678"
+}

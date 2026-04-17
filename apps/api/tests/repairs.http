@@ -1,0 +1,40 @@
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ1MTAyMywiZXhwIjoxNzc2NDc5ODIzfQ.Zop8gs5zdTcOVWZ9bK1-6j59onTB847MSYGBffO0xfY
+
+### Crear nueva reparación (Ingreso a taller)
+# @name createRepair
+POST {{baseUrl}}/repairs
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "ownerId": "69e282ce1aeabeda159f263c",
+  "brand": "Dell",
+  "model": "Inspiron 15",
+  "serialNumber": "SN-DELL-9988",
+  "faultDescription": "No da imagen, el fan gira al máximo.",
+  "specifications": {
+    "processor": "i5 11va Gen",
+    "ram": "8GB",
+    "storage": "256GB SSD"
+  }
+}
+
+### Listar todas las reparaciones (Dashboard)
+GET {{baseUrl}}/repairs
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+### Actualizar estado (Cambiar a "En Diagnóstico")
+@repairId = {{createRepair.response.body._id}}
+PUT {{baseUrl}}/repairs/{{repairId}}/status
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
+
+{
+  "status": "DIAGNOSING",
+  "description": "Se desarma equipo para medir tensiones en placa madre.",
+  "diagnostic": "Cortocircuito aparente en línea de 19V.",
+  "category": "Motherboard"
+}

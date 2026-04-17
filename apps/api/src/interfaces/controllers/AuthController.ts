@@ -36,4 +36,52 @@ export class AuthController {
       res.status(500).json({ message: "Server Error" });
     }
   }
+
+  static async register(req: Request, res: Response) {
+    try {
+      const { email, password, fullName, role, phoneNumber } = req.body;
+
+      // 1. Verificar si el usuario ya existe
+      const userExists = await UserModel.findOne({ email });
+      if (userExists) {
+        return res.status(400).json({ message: "El usuario ya existe" });
+      }
+
+      // 2. Hashear la contraseña (usando el utilitario que creamos)
+      const hashedPassword = await PasswordHasher.hash(password);
+
+      // 3. Crear el nuevo usuario
+      const newUser = new UserModel({
+        email,
+        password: hashedPassword,
+        fullName,
+        role: role || "CUSTOMER", // Por defecto es cliente si no se aclara
+        phoneNumber,
+      });
+
+      await newUser.save();
+
+      // 4. (Opcional) Generar token para que el usuario quede logueado tras registrarse
+      const token = jwt.sign(
+        { id: newUser._id, role: newUser.role },
+        process.env.JWT_SECRET || "secret_key",
+        { expiresIn: "8h" },
+      );
+
+      res.status(201).json({
+        message: "Usuario registrado exitosamente",
+        token,
+        user: {
+          id: newUser._id,
+          fullName: newUser.fullName,
+          role: newUser.role,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "Error en el servidor al registrar usuario" });
+    }
+  }
 }

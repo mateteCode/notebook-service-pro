@@ -7,6 +7,7 @@ import {
 import { AuthProvider } from "./context/AuthContext";
 import { LoginPage } from "./pages/LoginPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { NewRepairPage } from "./pages/NewRepairPage";
 
 function App() {
   return (
@@ -38,6 +39,14 @@ function App() {
           <Route
             path="*"
             element={<div className="p-10">404 - Página no encontrada</div>}
+          />
+          <Route
+            path="/new-repair"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "TECHNICIAN"]}>
+                <NewRepairPage />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </AuthProvider>

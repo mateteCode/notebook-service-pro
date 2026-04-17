@@ -5,6 +5,8 @@ import { UserRole } from "../../core/interfaces/IUser.ts";
 
 const router = Router();
 
+router.get("/", authenticate, RepairController.getAll);
+
 // Solo técnicos y admins ingresan equipos
 router.post(
   "/",

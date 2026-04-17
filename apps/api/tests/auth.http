@@ -1,0 +1,15 @@
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+### Login de Admin
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+    "email": "admin@taller.com",
+    "password": "admin123"
+}
+
+### Guardar el Token de la respuesta
+@authToken = {{login.response.body.token}}

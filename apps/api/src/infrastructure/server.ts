@@ -6,6 +6,9 @@ import mongoose from "mongoose";
 import authRoutes from "../interfaces/routes/authRoutes.ts";
 import repairRoutes from "../interfaces/routes/repairRoutes.ts";
 import statsRoutes from "../interfaces/routes/statsRoutes.ts";
+import userRoutes from "../interfaces/routes/userRoutes.ts";
+import adminRoutes from "../interfaces/routes/adminRoutes.ts";
+import supplierRoutes from "../interfaces/routes/supplierRoutes.ts";
 
 class Server {
   private app: Application;
@@ -16,6 +19,9 @@ class Server {
     auth: "/api/auth",
     repairs: "/api/repairs",
     stats: "/api/stats",
+    users: "/api/users",
+    admin: "/api/admin",
+    suppliers: "/api/suppliers",
   };
 
   constructor() {
@@ -48,6 +54,9 @@ class Server {
     this.app.use(this.apiPaths.auth, authRoutes);
     this.app.use(this.apiPaths.repairs, repairRoutes);
     this.app.use(this.apiPaths.stats, statsRoutes);
+    this.app.use(this.apiPaths.users, userRoutes);
+    this.app.use(this.apiPaths.admin, adminRoutes);
+    this.app.use(this.apiPaths.suppliers, supplierRoutes);
 
     this.app.get("/api/health", (req, resentment) => {
       resentment

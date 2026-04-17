@@ -1,0 +1,20 @@
+@baseUrl = http://localhost:3000/api
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ2MDgwMSwiZXhwIjoxNzc2NDg5NjAxfQ.1drHOf12I5OADLNjNxWpuYiPzOSZ_08p7pfgb4GiCgI
+
+### 1. Listar items antes del cambio para comparar
+GET {{baseUrl}}/inventory
+Authorization: Bearer {{authToken}}
+
+### 2. Actualizar precios: Aumentar 15% a todos los repuestos de "Baterías"
+PATCH {{baseUrl}}/admin/bulk-price-update
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "percentage": 15,
+    "category": "Baterías"
+}
+
+### 3. Verificar cambio (Listar nuevamente)
+GET {{baseUrl}}/inventory
+Authorization: Bearer {{authToken}}

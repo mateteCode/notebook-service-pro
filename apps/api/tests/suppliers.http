@@ -1,0 +1,35 @@
+@baseUrl = http://localhost:3000/api
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ2MDgwMSwiZXhwIjoxNzc2NDg5NjAxfQ.1drHOf12I5OADLNjNxWpuYiPzOSZ_08p7pfgb4GiCgI
+
+### 1. CREAR PROVEEDOR
+# @name createSupplier
+POST {{baseUrl}}/suppliers
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Exo AR",
+  "contactName": "Julio Pérez",
+  "email": "ventas@exo.com.ar",
+  "phone": "1166770000",
+  "category": "Notebook Screens"
+}
+
+### 2. LEER TODOS LOS PROVEEDORES
+GET {{baseUrl}}/suppliers
+Authorization: Bearer {{authToken}}
+
+### 3. ACTUALIZAR PROVEEDOR (Usar ID del paso 1)
+@supplierId = {{createSupplier.response.body._id}}
+PUT {{baseUrl}}/suppliers/{{supplierId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "contactName": "Julio Gomez",
+  "phone": "1199990001"
+}
+
+### 4. BORRAR PROVEEDOR
+DELETE {{baseUrl}}/suppliers/{{supplierId}}
+Authorization: Bearer {{authToken}}

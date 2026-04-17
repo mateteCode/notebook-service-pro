@@ -1,0 +1,9 @@
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ2MDgwMSwiZXhwIjoxNzc2NDg5NjAxfQ.1drHOf12I5OADLNjNxWpuYiPzOSZ_08p7pfgb4GiCgI
+
+
+### Generar Backup de la Base de Datos
+POST {{baseUrl}}/admin/backup
+Authorization: Bearer {{authToken}}
+Content-Type: {{contentType}}
