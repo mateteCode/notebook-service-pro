@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:3000/api
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ5NDg3NiwiZXhwIjoxNzc2NTIzNjc2fQ.xo2h-WjNhDAqcwvuv7aGmzSwmZJpNVNtUI5rRyoGA4g
+@repairId = 69e32cd8b006b460f712235e
+@partId = 69e2cf6ef6ab33ea6870536e
+
+### 1. Ver stock inicial del repuesto
+GET {{baseUrl}}/inventory
+Authorization: Bearer {{authToken}}
+
+### 2. Asignar la batería a la reparación
+POST {{baseUrl}}/repairs/{{repairId}}/parts
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "partId": "{{partId}}",
+    "quantity": 1
+}
+
+### 3. Verificar que el stock bajó y el presupuesto de la notebook subió
+GET {{baseUrl}}/repairs/{{repairId}}
+Authorization: Bearer {{authToken}}

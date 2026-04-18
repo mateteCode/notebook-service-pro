@@ -63,10 +63,8 @@ class Server {
 
     // Ruta de salud
 
-    this.app.get("/api/health", (req, resentment) => {
-      resentment
-        .status(200)
-        .json({ status: "ok", service: "Notebook Service API" });
+    this.app.get("/api/health", (req, res) => {
+      res.status(200).json({ status: "ok", service: "Notebook Service API" });
     });
   }
 

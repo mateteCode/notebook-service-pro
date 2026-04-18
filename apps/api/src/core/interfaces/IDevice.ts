@@ -8,6 +8,13 @@ export enum DeviceStatus {
   DELIVERED = "DELIVERED",
 }
 
+export interface IPartUsed {
+  partId: string;
+  name: string;
+  priceAtTime: number;
+  quantity: number;
+}
+
 export interface IDevice {
   id?: string;
   ownerId: string; // Referencia al IUser (Customer)
@@ -23,6 +30,8 @@ export interface IDevice {
   faultDescription: string; // Lo que dice el cliente
   technicalDiagnostic?: string; // Lo que encuentra el técnico
   commonFaultCategory?: string; // Para las estadísticas (ej: "Batería", "Bisingas", "BIOS")
+  partsUsed: IPartUsed[];
+  totalBudget: number;
   repairHistory: {
     status: DeviceStatus;
     description: string;

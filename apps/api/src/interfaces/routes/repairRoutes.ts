@@ -7,6 +7,8 @@ const router = Router();
 
 router.get("/", authenticate, RepairController.getAll);
 
+router.get("/:id", authenticate, RepairController.getById);
+
 // Solo técnicos y admins ingresan equipos
 router.post(
   "/",
@@ -22,5 +24,14 @@ router.put(
   authorize([UserRole.ADMIN, UserRole.TECHNICIAN]),
   RepairController.updateStatus,
 );
+
+router.post(
+  "/",
+  authenticate,
+  authorize([UserRole.ADMIN, UserRole.TECHNICIAN]),
+  RepairController.createEntry,
+);
+
+router.post("/:repairId/parts", authenticate, RepairController.addPartToRepair);
 
 export default router;

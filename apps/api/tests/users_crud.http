@@ -1,0 +1,34 @@
+@baseUrl = http://localhost:3000/api
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ5NDg3NiwiZXhwIjoxNzc2NTIzNjc2fQ.xo2h-WjNhDAqcwvuv7aGmzSwmZJpNVNtUI5rRyoGA4g
+
+### 1. Crear un Técnico nuevo
+# @name createTech
+POST {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "email": "tecnico1@taller.com",
+    "password": "techpassword",
+    "fullName": "Matias Tech",
+    "role": "TECHNICIAN",
+    "phoneNumber": "1122334455"
+}
+
+### 2. Listar todos los usuarios
+GET {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+
+### 3. Actualizar datos del Técnico
+@techId = {{createTech.response.body._id}}
+PUT {{baseUrl}}/users/{{techId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "fullName": "Matias Lorenzo (Lead Tech)"
+}
+
+### 4. Borrar el Técnico
+DELETE {{baseUrl}}/users/{{techId}}
+Authorization: Bearer {{authToken}}

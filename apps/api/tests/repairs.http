@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:3000/api
 @contentType = application/json
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ1MTAyMywiZXhwIjoxNzc2NDc5ODIzfQ.Zop8gs5zdTcOVWZ9bK1-6j59onTB847MSYGBffO0xfY
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ5NDg3NiwiZXhwIjoxNzc2NTIzNjc2fQ.xo2h-WjNhDAqcwvuv7aGmzSwmZJpNVNtUI5rRyoGA4g
 
 ### Crear nueva reparación (Ingreso a taller)
 # @name createRepair

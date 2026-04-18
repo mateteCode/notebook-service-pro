@@ -3,6 +3,7 @@ import { DeviceModel } from "../../infrastructure/models/DeviceModel.ts";
 import { DeviceStatus } from "../../core/interfaces/IDevice.ts";
 import { NotificationService } from "../../use-cases/NotifyClient.ts";
 import { UserModel } from "../../infrastructure/models/UserModel.ts";
+import { InventoryModel } from "../../infrastructure/models/InventoryModel.ts";
 
 export class RepairController {
   // Crear nuevo ingreso
@@ -101,6 +102,65 @@ export class RepairController {
       res.json(repairs);
     } catch (error) {
       res.status(500).json({ message: "Error al obtener reparaciones" });
+    }
+  }
+
+  static async addPartToRepair(req: Request, res: Response) {
+    try {
+      const { repairId } = req.params;
+      const { partId, quantity = 1 } = req.body;
+
+      // 1. Buscar el repuesto y validar stock
+      const part = await InventoryModel.findById(partId);
+      if (!part || part.stock < quantity) {
+        return res
+          .status(400)
+          .json({ message: "Stock insuficiente o repuesto no encontrado" });
+      }
+
+      // 2. Buscar la reparación
+      const repair = await DeviceModel.findById(repairId);
+      if (!repair)
+        return res.status(404).json({ message: "Reparación no encontrada" });
+
+      // 3. DESCONTAR STOCK (Operación atómica)
+      part.stock -= quantity;
+      await part.save();
+
+      // 4. ASIGNAR A LA REPARACIÓN
+      // Añadimos el repuesto al array de piezas usadas y actualizamos el costo total
+      repair.partsUsed.push({
+        partId: part._id.toString(),
+        name: part.name,
+        priceAtTime: part.salePrice, // Guardamos el precio del momento por la inflación
+        quantity,
+      });
+
+      repair.totalBudget += part.salePrice * quantity;
+
+      await repair.save();
+
+      res.json({ message: "Repuesto asignado correctamente", repair });
+    } catch (error) {
+      res.status(500).json({ message: "Error al asignar repuesto" });
+    }
+  }
+
+  static async getById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      // Buscamos la reparación y poblamos los datos del cliente y los repuestos
+      const repair = await DeviceModel.findById(id)
+        .populate("ownerId", "fullName email phoneNumber")
+        .populate("partsUsed.partId", "name sku");
+
+      if (!repair) {
+        return res.status(404).json({ message: "Reparación no encontrada" });
+      }
+
+      res.json(repair);
+    } catch (error) {
+      res.status(500).json({ message: "Error al obtener la reparación" });
     }
   }
 }

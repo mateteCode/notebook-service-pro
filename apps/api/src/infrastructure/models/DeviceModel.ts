@@ -1,5 +1,3 @@
-// En: apps/api/src/infrastructure/models/DeviceModel.ts
-
 import { Schema, model } from "mongoose";
 import { type IDevice, DeviceStatus } from "../../core/interfaces/IDevice.ts";
 
@@ -22,6 +20,15 @@ const DeviceSchema = new Schema<IDevice>(
     faultDescription: { type: String, required: true }, // Lo que dice el cliente
     technicalDiagnostic: { type: String }, // Llenado por el técnico
     commonFaultCategory: { type: String }, // Ej: "Motherboard", "Pantalla", "Software"
+    partsUsed: [
+      {
+        partId: { type: Schema.Types.ObjectId, ref: "Inventory" },
+        name: { type: String },
+        priceAtTime: { type: Number },
+        quantity: { type: Number, default: 1 },
+      },
+    ],
+    totalBudget: { type: Number, default: 0 },
 
     // El historial que verá el cliente en su Timeline
     repairHistory: [
