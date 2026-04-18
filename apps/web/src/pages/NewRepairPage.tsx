@@ -22,9 +22,19 @@ export const NewRepairPage = () => {
     e.preventDefault();
     if (!customer) return alert("Debes seleccionar un cliente");
 
+    // Extraemos el ID sin importar si viene como _id (MongoDB) o id (TypeScript)
+    const validCustomerId = (customer as any)._id || customer.id;
+
+    if (!validCustomerId) {
+      console.error("Objeto cliente defectuoso:", customer);
+      return alert(
+        "Error: El cliente seleccionado no tiene un ID válido. Revisá la consola.",
+      );
+    }
+
     try {
       await api.post("/repairs", {
-        ownerId: customer.id,
+        ownerId: validCustomerId,
         ...formData,
         specifications: {
           processor: formData.processor,

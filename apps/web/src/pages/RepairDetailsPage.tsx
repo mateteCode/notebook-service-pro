@@ -1,12 +1,31 @@
-// En: apps/web/src/pages/RepairDetailsPage.tsx
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import api from "../services/api";
 import { DeviceStatus } from "../../../api/src/core/interfaces/IDevice"; // Compartimos Enums
-import { Package, Send /*, Tool*/, Clipboard } from "lucide-react";
+import { Package, Send, Clipboard, History, X, PlusCircle } from "lucide-react";
+import { RepairTimeline } from "../components/RepairTimeline";
+import { useInventory } from "../hooks/useInventory"; // Necesitamos traer el inventario
 import type { IDevice } from "../../../api/src/core/interfaces/IDevice";
 import type { IUser } from "../../../api/src/core/interfaces/IUser";
+import { Layout } from "../components/Layout.tsx";
+import { AxiosError } from "axios";
+
+interface IInventoryItem {
+  _id: string;
+  name: string;
+  sku: string;
+  stock: number;
+  salePrice: number;
+  supplier: { name: string };
+  compatibleModels: string[];
+  minStockAlert: number;
+}
+interface IPartUsed {
+  partId: string;
+  name: string;
+  quantity: number;
+  priceAtTime: number;
+}
 
 export const RepairDetailsPage = () => {
   const { id } = useParams();
@@ -14,143 +33,306 @@ export const RepairDetailsPage = () => {
   const [diagnostic, setDiagnostic] = useState("");
   const [status, setStatus] = useState("");
   const [category, setCategory] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // Cargar datos del equipo
-  useEffect(() => {
-    const loadDevice = async () => {
+  // Estados para el model de repuestos
+  const [showPartsModal, setShowPartsModal] = useState(false);
+  const { items: inventoryItems } = useInventory();
+  const [partSearch, setPartSearch] = useState("");
+
+  // Envolvemos la carga en useCallback para poder llamarla después de actualizar
+  const loadDevice = useCallback(async () => {
+    try {
       const { data } = await api.get(`/repairs/${id}`);
       setDevice(data);
-      setDiagnostic(data.technicalDiagnostic || "");
+      // Solo seteamos el estado inicial. El diagnóstico lo dejamos vacío para nuevas notas
       setStatus(data.currentStatus);
       setCategory(data.commonFaultCategory || "");
-    };
-    loadDevice();
+      setLoading(false);
+    } catch (error) {
+      console.error("Error al cargar equipo:", error);
+    }
   }, [id]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadDevice();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadDevice]);
+
+  // --- FUNCIÓN PARA ASIGNAR REPUESTO ---
+  const handleAssignPart = async (partId: string) => {
+    try {
+      await api.post(`/repairs/${id}/parts`, {
+        partId,
+        quantity: 1, // Por defecto 1, podrías agregar un input de cantidad luego
+      });
+      alert("Repuesto asignado con éxito. Stock descontado.");
+      setShowPartsModal(false);
+      loadDevice(); // Recargamos para ver el nuevo presupuesto y la pieza en la lista
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      alert(axiosError.response?.data?.message || "Error al asignar repuesto");
+    }
+  };
+
   const handleUpdate = async () => {
+    if (!diagnostic.trim())
+      return alert("Por favor, ingresá un detalle de lo realizado.");
     try {
       await api.put(`/repairs/${id}/status`, {
         status,
         diagnostic,
         category,
-        description: `Actualización de estado por técnico: ${status}`,
+        /*description: `Actualización de estado por técnico: ${status}`,*/
+        description: diagnostic,
       });
-      alert("Reparación actualizada y cliente notificado");
+      //alert("Reparación actualizada y cliente notificado");
+      // LIMPIEZA DEL FORMULARIO:
+      setDiagnostic(""); // Limpiamos el área de texto
+      // RECARGA DE DATOS:
+      // Al llamar a loadDevice, se actualiza el historial (timeline) automáticamente
+      loadDevice();
     } catch (error) {
       alert("Error al actualizar");
       console.log(error);
     }
   };
 
-  if (!device) return <div className="p-10">Cargando ficha...</div>;
+  if (loading || !device)
+    return (
+      <Layout>
+        <div className="p-10">Cargando ficha...</div>
+      </Layout>
+    );
+
+  // Filtramos el inventario para el buscador
+  const filteredParts = inventoryItems.filter(
+    (item: IInventoryItem) =>
+      item.name.toLowerCase().includes(partSearch.toLowerCase()) ||
+      item.sku.toLowerCase().includes(partSearch.toLowerCase()),
+  );
 
   return (
-    <div className="p-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Columna Izquierda: Información del Equipo y Cliente */}
-      <div className="md:col-span-1 space-y-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-            <Clipboard size={20} className="text-blue-500" /> Datos del Equipo
-          </h3>
-          <div className="text-sm space-y-2">
-            <p>
-              <b>Marca/Modelo:</b> {device.brand} {device.model}
-            </p>
-            <p>
-              <b>S/N:</b> {device.serialNumber}
-            </p>
-            <p>
-              <b>Cliente:</b>{" "}
-              {device.ownerId && typeof device.ownerId === "object"
-                ? (device.ownerId as IUser).fullName
-                : "N/A"}
-            </p>
-            <hr />
-            <p className="text-gray-600 italic">
-              " {device.faultDescription} "
-            </p>
+    <Layout>
+      <div className="p-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* COLUMNA IZQUIERDA: Info y Historial */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Info del Equipo */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <Clipboard size={20} className="text-blue-500" /> Ficha del Equipo
+            </h3>
+            <div className="text-sm space-y-3">
+              <p>
+                <b>Equipo:</b> {device.brand} {device.model}
+              </p>
+              <p>
+                <b>S/N:</b> {device.serialNumber}
+              </p>
+              <p>
+                <b>Cliente:</b>{" "}
+                {typeof device.ownerId === "object"
+                  ? (device.ownerId as IUser).fullName
+                  : "Cargando..."}
+              </p>
+              <div className="bg-blue-50 p-3 rounded text-xs text-blue-800 italic">
+                " {device.faultDescription} "
+              </div>
+            </div>
+          </div>
+
+          {/* NUEVO: LISTA DE REPUESTOS USADOS Y PRESUPUESTO */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold flex items-center gap-2">
+                <Package size={20} className="text-orange-500" /> Cotización
+              </h3>
+              <span className="text-xl font-bold text-green-600">
+                ${device.totalBudget?.toLocaleString("es-AR")}
+              </span>
+            </div>
+
+            {device.partsUsed && device.partsUsed.length > 0 ? (
+              <ul className="space-y-2 text-sm">
+                {device.partsUsed.map((part: IPartUsed, index: number) => (
+                  <li
+                    key={index}
+                    className="flex justify-between border-b pb-1"
+                  >
+                    <span>
+                      {part.quantity}x {part.name}
+                    </span>
+                    <span className="text-gray-600">
+                      $
+                      {(part.priceAtTime * part.quantity).toLocaleString(
+                        "es-AR",
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-xs text-gray-400 italic">
+                No hay repuestos asignados aún.
+              </p>
+            )}
+          </div>
+
+          {/* HISTORIAL (Timeline) */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <History size={20} className="text-purple-500" /> Línea de Tiempo
+            </h3>
+            {/* Usamos el componente que ya tenías */}
+            <RepairTimeline
+              history={device.repairHistory.map((h) => ({
+                status: h.status,
+                description: h.description,
+                updatedAt: h.updatedAt.toString(),
+              }))}
+            />
           </div>
         </div>
 
-        {/* Sección de Repuestos Usados */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-            <Package size={20} className="text-orange-500" /> Repuestos
-          </h3>
-          <button className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 text-sm">
-            + Asignar Repuesto de Stock
-          </button>
-          {/* Mapeo de device.partsUsed aquí */}
-        </div>
-      </div>
+        {/* COLUMNA DERECHA: Panel de Trabajo */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white p-8 rounded-xl shadow-md border-t-4 border-blue-600">
+            <h2 className="text-xl font-bold mb-6 text-gray-800">
+              Actualizar Avance
+            </h2>
 
-      {/* Columna Derecha: Acciones de Taller */}
-      <div className="md:col-span-2 space-y-6">
-        <div className="bg-white p-8 rounded-xl shadow-md">
-          <h2 className="text-xl font-bold mb-6 text-gray-800">
-            Panel de Diagnóstico
-          </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nuevo Estado
+                </label>
+                <select
+                  className="w-full p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  {Object.values(DeviceStatus).map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Estado Actual
-              </label>
-              <select
-                className="w-full p-2 border rounded-lg bg-gray-50"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                {Object.values(DeviceStatus).map((s) => (
-                  <option key={s} value={s}>
-                    {s}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Categoría de Falla
+                </label>
+                <select
+                  className="w-full p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                >
+                  <option value="">Seleccionar...</option>
+                  <option value="Motherboard">
+                    Motherboard / Microsoldadura
                   </option>
-                ))}
-              </select>
+                  <option value="Screen">Pantalla / Video</option>
+                  <option value="Battery">Batería / Carga</option>
+                  <option value="Software">Software / BIOS</option>
+                </select>
+              </div>
             </div>
 
-            <div>
+            <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Categoría de Falla (Estadística)
-              </label>
-              <select
-                className="w-full p-2 border rounded-lg bg-gray-50"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value="">Seleccionar categoría...</option>
-                <option value="Motherboard">
-                  Motherboard / Microelectrónica
-                </option>
-                <option value="Screen">Pantalla / Flex</option>
-                <option value="Battery">Batería / Alimentación</option>
-                <option value="Software">Software / OS</option>
-                <option value="Keyboard">Teclado / Touchpad</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Informe Técnico (Interno)
+                ¿Qué se hizo en el equipo? (Se enviará al cliente)
               </label>
               <textarea
-                rows={6}
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Describí los hallazgos técnicos y pruebas realizadas..."
+                rows={5}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="Ej: Se midieron tensiones en la etapa de entrada. Se detectó corto en el primer mosfet..."
                 value={diagnostic}
                 onChange={(e) => setDiagnostic(e.target.value)}
               />
             </div>
 
-            <button
-              onClick={handleUpdate}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 flex items-center justify-center gap-2 transition"
-            >
-              <Send size={18} /> Guardar Cambios y Notificar Cliente
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={handleUpdate}
+                className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95"
+              >
+                <Send size={18} /> Guardar Cambios y Notificar
+              </button>
+
+              <button className="px-6 py-3 border-2 border-orange-500 text-orange-600 rounded-lg font-bold hover:bg-orange-50 flex items-center gap-2">
+                <Package size={20} /> Repuestos
+              </button>
+              <button
+                onClick={() => setShowPartsModal(true)}
+                className="px-6 py-3 border-2 border-orange-500 text-orange-600 rounded-lg font-bold hover:bg-orange-50 flex items-center gap-2"
+              >
+                <Package size={20} /> Asignar Repuesto
+              </button>
+            </div>
           </div>
+
+          {/* Aquí podés agregar la tabla de repuestos ya asignados a esta reparación */}
+          {/* --- MODAL DE INVENTARIO --- */}
+          {showPartsModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[80vh]">
+                <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+                  <h3 className="font-bold text-lg">Buscar en Stock</h3>
+                  <button
+                    onClick={() => setShowPartsModal(false)}
+                    className="text-gray-500 hover:text-red-500"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+
+                <div className="p-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Buscar por nombre o SKU..."
+                    className="w-full p-2 border rounded-lg"
+                    value={partSearch}
+                    onChange={(e) => setPartSearch(e.target.value)}
+                  />
+                </div>
+
+                <div className="p-4 overflow-y-auto flex-1 space-y-2">
+                  {filteredParts.map((item: IInventoryItem) => (
+                    <div
+                      key={item._id}
+                      className="flex justify-between items-center p-3 border rounded-lg hover:border-blue-500 transition"
+                    >
+                      <div>
+                        <p className="font-bold text-sm text-gray-800">
+                          {item.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Stock: {item.stock} | Precio: ${item.salePrice}
+                        </p>
+                      </div>
+                      <button
+                        disabled={item.stock < 1}
+                        onClick={() => handleAssignPart(item._id)}
+                        className={`p-2 rounded-lg ${item.stock < 1 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-100 text-blue-600 hover:bg-blue-200"}`}
+                      >
+                        <PlusCircle size={20} />
+                      </button>
+                    </div>
+                  ))}
+                  {filteredParts.length === 0 && (
+                    <p className="text-center text-gray-500 text-sm">
+                      No se encontraron repuestos.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };

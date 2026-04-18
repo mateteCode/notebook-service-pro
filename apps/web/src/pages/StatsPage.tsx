@@ -27,7 +27,12 @@ export const StatsPage = () => {
   // Colores para las barras basados en la severidad o tipo
   const COLORS = ["#3B82F6", "#EF4444", "#10B981", "#F59E0B", "#8B5CF6"];
 
-  if (loading) return <div className="p-10">Analizando base de datos...</div>;
+  if (loading)
+    return (
+      <Layout>
+        <div className="p-10">Analizando base de datos...</div>
+      </Layout>
+    );
 
   return (
     <Layout>

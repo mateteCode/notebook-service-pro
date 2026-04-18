@@ -21,7 +21,12 @@ export const InventoryPage = () => {
     loading: boolean;
   };
 
-  if (loading) return <div className="p-10">Cargando inventario...</div>;
+  if (loading)
+    return (
+      <Layout>
+        <div className="p-10">Cargando inventario...</div>
+      </Layout>
+    );
 
   return (
     <Layout>

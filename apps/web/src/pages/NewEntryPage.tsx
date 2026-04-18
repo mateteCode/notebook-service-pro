@@ -23,7 +23,7 @@ export const NewEntryPage = () => {
 
     try {
       await api.post("/repairs", {
-        ownerId: selectedCustomer.id,
+        ownerId: (selectedCustomer as any)._id || selectedCustomer.id,
         ...deviceData,
         specifications: {
           processor: deviceData.processor,

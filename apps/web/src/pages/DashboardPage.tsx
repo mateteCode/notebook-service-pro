@@ -6,7 +6,12 @@ import { type IDevice } from "../../../api/src/core/interfaces/IDevice";
 export const DashboardPage = () => {
   const { repairs, loading } = useRepairs();
 
-  if (loading) return <div className="p-10">Cargando taller...</div>;
+  if (loading)
+    return (
+      <Layout>
+        <div className="p-10">Cargando taller...</div>
+      </Layout>
+    );
 
   return (
     <Layout>

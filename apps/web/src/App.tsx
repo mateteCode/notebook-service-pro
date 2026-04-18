@@ -12,6 +12,8 @@ import { DashboardPage } from "./pages/DashboardPage"; // Importar
 import { InventoryPage } from "./pages/InventoryPage"; // Importar
 import { StatsPage } from "./pages/StatsPage"; // Importar
 import { RepairDetailsPage } from "./pages/RepairDetailsPage"; // Importar
+import { UsersPage } from "./pages/UsersPage";
+import { CustomerRepairsPage } from "./pages/CustomerRepairsPage";
 
 function App() {
   return (
@@ -72,7 +74,7 @@ function App() {
             path="/my-repairs"
             element={
               <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-                <h1 className="p-10 text-2xl">Mis Reparaciones</h1>
+                <CustomerRepairsPage />
               </ProtectedRoute>
             }
           />
@@ -85,6 +87,24 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["ADMIN", "TECHNICIAN"]}>
                 <NewRepairPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                <UsersPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/my-repairs"
+            element={
+              <ProtectedRoute allowedRoles={["CUSTOMER"]}>
+                <CustomerRepairsPage />
               </ProtectedRoute>
             }
           />

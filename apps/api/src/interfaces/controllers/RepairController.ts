@@ -10,6 +10,12 @@ export class RepairController {
   static async createEntry(req: Request, res: Response) {
     try {
       const deviceData = req.body;
+      if (!deviceData.ownerId) {
+        return res.status(400).json({
+          message:
+            "Rechazado: El ownerId del cliente es obligatorio y no fue recibido.",
+        });
+      }
       const newDevice = new DeviceModel({
         ...deviceData,
         repairHistory: [
@@ -24,6 +30,7 @@ export class RepairController {
       await newDevice.save();
       res.status(201).json(newDevice);
     } catch (error) {
+      console.error("❌ Error al crear ingreso en DB:", error);
       res.status(500).json({ message: "Error creating device entry" });
     }
   }
@@ -94,11 +101,22 @@ export class RepairController {
 
   static async getAll(req: Request, res: Response) {
     try {
+      const user = (req as any).user; // Obtenemos el usuario del token
+      let filter = {};
+      if (user.role === "CUSTOMER") {
+        filter = { ownerId: user.id };
+      }
+
+      console.log(`🔍 Buscando reparaciones para el rol: ${user.role}`);
+      console.log(`🎯 Filtro aplicado:`, filter);
+
       // Usamos .populate('ownerId') para que nos traiga los datos del cliente y no solo el ID
-      const repairs = await DeviceModel.find().populate(
-        "ownerId",
-        "fullName email phoneNumber",
-      );
+      const repairs = await DeviceModel.find(filter)
+        .populate("ownerId", "fullName email phoneNumber")
+        .sort({ createdAt: -1 });
+
+      console.log(`✅ Resultados encontrados: ${repairs.length}`);
+
       res.json(repairs);
     } catch (error) {
       res.status(500).json({ message: "Error al obtener reparaciones" });
