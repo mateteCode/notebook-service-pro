@@ -9,6 +9,7 @@ import statsRoutes from "../interfaces/routes/statsRoutes.ts";
 import userRoutes from "../interfaces/routes/userRoutes.ts";
 import adminRoutes from "../interfaces/routes/adminRoutes.ts";
 import supplierRoutes from "../interfaces/routes/supplierRoutes.ts";
+import inventoryRoutes from "../interfaces/routes/inventoryRoutes.ts";
 
 class Server {
   private app: Application;
@@ -22,6 +23,7 @@ class Server {
     users: "/api/users",
     admin: "/api/admin",
     suppliers: "/api/suppliers",
+    inventory: "/api/inventory",
   };
 
   constructor() {
@@ -57,6 +59,9 @@ class Server {
     this.app.use(this.apiPaths.users, userRoutes);
     this.app.use(this.apiPaths.admin, adminRoutes);
     this.app.use(this.apiPaths.suppliers, supplierRoutes);
+    this.app.use(this.apiPaths.inventory, inventoryRoutes);
+
+    // Ruta de salud
 
     this.app.get("/api/health", (req, resentment) => {
       resentment

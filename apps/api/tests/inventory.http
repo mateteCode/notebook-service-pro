@@ -1,5 +1,44 @@
 @baseUrl = http://localhost:3000/api
 @authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ2MDgwMSwiZXhwIjoxNzc2NDg5NjAxfQ.1drHOf12I5OADLNjNxWpuYiPzOSZ_08p7pfgb4GiCgI
+@supplierId = 69e2bf408d2005f5258f5678
+
+### 1. CREAR ITEM DE REPUESTO
+# @name createItem
+POST {{baseUrl}}/inventory
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Batería Dell Inspiron 3505",
+  "sku": "BAT-DELL-3505-01",
+  "category": "Baterías",
+  "costPrice": 45000,
+  "salePrice": 68000,
+  "stock": 10,
+  "minStockAlert": 3,
+  "supplier": "{{supplierId}}",
+  "compatibleModels": ["Dell 3505", "Dell 3501"],
+  "location": "Estante A1"
+}
+
+### 2. LEER INVENTARIO COMPLETO
+GET {{baseUrl}}/inventory
+Authorization: Bearer {{authToken}}
+
+### 3. ACTUALIZAR STOCK Y PRECIO
+@itemId = {{createItem.response.body._id}}
+PUT {{baseUrl}}/inventory/{{itemId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "stock": 15,
+  "salePrice": 72000
+}
+
+### 4. BORRAR ITEM
+DELETE {{baseUrl}}/inventory/{{itemId}}
+Authorization: Bearer {{authToken}}
 
 ### 1. Listar items antes del cambio para comparar
 GET {{baseUrl}}/inventory

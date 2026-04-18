@@ -1,4 +1,24 @@
 import { Schema, model } from "mongoose";
+
+const InventorySchema = new Schema(
+  {
+    name: { type: String, required: true },
+    sku: { type: String, required: true, unique: true }, // Código único de stock
+    category: { type: String, required: true },
+    costPrice: { type: Number, required: true },
+    salePrice: { type: Number, required: true },
+    stock: { type: Number, default: 0 },
+    minStockAlert: { type: Number, default: 5 },
+    supplier: { type: Schema.Types.ObjectId, ref: "Supplier", required: true },
+    compatibleModels: [{ type: String }], // Array de modelos compatibles
+    location: { type: String }, // Estante/Cajón en el taller
+    active: { type: Boolean, default: true },
+  },
+  { timestamps: true },
+);
+
+export const InventoryModel = model("Inventory", InventorySchema);
+/*import { Schema, model } from "mongoose";
 import type { IInventoryItem } from "../../core/interfaces/IInventory.ts";
 
 const InventorySchema = new Schema<IInventoryItem>(
@@ -29,3 +49,4 @@ export const InventoryModel = model<IInventoryItem>(
   "Inventory",
   InventorySchema,
 );
+*/
