@@ -3,7 +3,11 @@ import { type IDevice, DeviceStatus } from "../../core/interfaces/IDevice.ts";
 
 const DeviceSchema = new Schema<IDevice>(
   {
-    ownerId: { type: String, required: true },
+    ownerId: {
+      type: Schema.Types.ObjectId,
+      ref: "User", // Debe coincidir con el nombre en UserModel.ts
+      required: true,
+    },
     brand: { type: String, required: true },
     model: { type: String, required: true },
     serialNumber: { type: String, required: true },

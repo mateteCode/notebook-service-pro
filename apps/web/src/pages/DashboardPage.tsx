@@ -15,9 +15,6 @@ export const DashboardPage = () => {
           <h1 className="text-2xl font-bold text-gray-800">
             Panel de Control de Taller
           </h1>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-            + Nuevo Ingreso
-          </button>
         </div>
 
         {/* Resumen de Estados */}

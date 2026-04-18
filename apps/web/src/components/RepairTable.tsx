@@ -1,4 +1,5 @@
-import { Monitor /*,Smartphone*/ /*,AlertCircle*/ } from "lucide-react";
+import { Monitor /*,Smartphone*/ /*,AlertCircle*/, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Repair {
   _id: string;
@@ -12,6 +13,8 @@ interface Repair {
 }
 
 export const RepairTable = ({ repairs }: { repairs: Repair[] }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="overflow-x-auto bg-white rounded-lg shadow">
       <table className="min-w-full table-auto">
@@ -48,7 +51,9 @@ export const RepairTable = ({ repairs }: { repairs: Repair[] }) => {
                 </div>
               </td>
               <td className="px-6 py-4 text-sm text-gray-600">
-                {repair.ownerId?.fullName || "N/A"}
+                {typeof repair.ownerId === "object"
+                  ? repair.ownerId?.fullName
+                  : "Cliente no asignado"}
               </td>
               <td className="px-6 py-4">
                 <span
@@ -62,7 +67,11 @@ export const RepairTable = ({ repairs }: { repairs: Repair[] }) => {
                 </span>
               </td>
               <td className="px-6 py-4 text-sm">
-                <button className="text-blue-600 hover:text-blue-900 font-semibold">
+                <button
+                  onClick={() => navigate(`/repairs/${repair._id}`)}
+                  className="flex items-center gap-1 text-blue-600 hover:text-blue-900 font-semibold"
+                >
+                  <Eye size={16} />
                   Gestionar
                 </button>
               </td>

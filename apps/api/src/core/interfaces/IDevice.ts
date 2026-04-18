@@ -1,3 +1,5 @@
+import type { IUser } from "./IUser.ts";
+
 export enum DeviceStatus {
   RECEIVED = "RECEIVED",
   DIAGNOSING = "DIAGNOSING",
@@ -17,7 +19,7 @@ export interface IPartUsed {
 
 export interface IDevice {
   id?: string;
-  ownerId: string; // Referencia al IUser (Customer)
+  ownerId: string | IUser; // Referencia al IUser (Customer)
   brand: string; // Ej: Dell, Lenovo
   model: string; // Ej: Inspiron 3505
   serialNumber: string;

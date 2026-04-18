@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:3000/api
 @contentType = application/json
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ2MDgwMSwiZXhwIjoxNzc2NDg5NjAxfQ.1drHOf12I5OADLNjNxWpuYiPzOSZ_08p7pfgb4GiCgI
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTFmN2RlZjYyZDQ2MDk2OTE2OWE3YSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc3NjQ5NzQ3MiwiZXhwIjoxNzc2NTI2MjcyfQ.72cfax3Isso0zcuKfPlMSccD3a0rtgXGHIs1d3D8rL4
 
 
 ### Generar Backup de la Base de Datos

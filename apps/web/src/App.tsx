@@ -8,6 +8,10 @@ import { AuthProvider } from "./context/AuthContext";
 import { LoginPage } from "./pages/LoginPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { NewRepairPage } from "./pages/NewRepairPage";
+import { DashboardPage } from "./pages/DashboardPage"; // Importar
+import { InventoryPage } from "./pages/InventoryPage"; // Importar
+import { StatsPage } from "./pages/StatsPage"; // Importar
+import { RepairDetailsPage } from "./pages/RepairDetailsPage"; // Importar
 
 function App() {
   return (
@@ -22,7 +26,43 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute allowedRoles={["ADMIN", "TECHNICIAN"]}>
-                <h1 className="p-10 text-2xl">Dashboard de Taller</h1>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/inventory"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "STOCK_MANAGER"]}>
+                <InventoryPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/stats"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                <StatsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/repairs/:id"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "TECHNICIAN"]}>
+                <RepairDetailsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/new-repair"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "TECHNICIAN"]}>
+                <NewRepairPage />
               </ProtectedRoute>
             }
           />

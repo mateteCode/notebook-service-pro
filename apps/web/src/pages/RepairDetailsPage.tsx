@@ -80,7 +80,7 @@ export const RepairDetailsPage = () => {
           <button className="w-full py-2 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:bg-gray-50 text-sm">
             + Asignar Repuesto de Stock
           </button>
-          {/* Mapeo de device.usedParts aquí */}
+          {/* Mapeo de device.partsUsed aquí */}
         </div>
       </div>
 

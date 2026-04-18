@@ -27,7 +27,7 @@ export class InventoryAssignment {
       deviceId,
       {
         $push: {
-          usedParts: {
+          partsUsed: {
             partId,
             name: part.name,
             costAtTime: part.salePrice,
