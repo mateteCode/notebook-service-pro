@@ -55,6 +55,7 @@ class Server {
           "https://notebook-service-pro.vercel.app", // ¡Tu URL real de Vercel!
         ],
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"], // Clave para que deje pasar el Token y el JSON
         credentials: true, // Fundamental para que pasen los Tokens JWT en los headers
       }),
     );
