@@ -1,5 +1,5 @@
-import { WhatsAppProvider } from "../infrastructure/notifications/WhatsAppProvider.ts";
-import type { INotificationPayload } from "../core/interfaces/INotificationProvider.ts";
+import { WhatsAppProvider } from "../infrastructure/notifications/WhatsAppProvider.js";
+import type { INotificationPayload } from "../core/interfaces/INotificationProvider.js";
 
 export class NotificationService {
   private static providers = [new WhatsAppProvider()]; // Podés agregar un EmailProvider acá

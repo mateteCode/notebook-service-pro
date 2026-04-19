@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
-import { DeviceModel } from "../../infrastructure/models/DeviceModel.ts";
-import { DeviceStatus } from "../../core/interfaces/IDevice.ts";
-import { NotificationService } from "../../use-cases/NotifyClient.ts";
-import { UserModel } from "../../infrastructure/models/UserModel.ts";
-import { InventoryModel } from "../../infrastructure/models/InventoryModel.ts";
+import { DeviceModel } from "../../infrastructure/models/DeviceModel.js";
+import { DeviceStatus } from "../../core/interfaces/IDevice.js";
+import { NotificationService } from "../../use-cases/NotifyClient.js";
+import { UserModel } from "../../infrastructure/models/UserModel.js";
+import { InventoryModel } from "../../infrastructure/models/InventoryModel.js";
 
 export class RepairController {
   // Crear nuevo ingreso

@@ -2,9 +2,9 @@
 
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { UserModel } from "./infrastructure/models/UserModel.ts";
-import { UserRole } from "./core/interfaces/IUser.ts";
-import { PasswordHasher } from "./infrastructure/utils/PasswordHasher.ts";
+import { UserModel } from "./infrastructure/models/UserModel.js";
+import { UserRole } from "./core/interfaces/IUser.js";
+import { PasswordHasher } from "./infrastructure/utils/PasswordHasher.js";
 
 dotenv.config();
 

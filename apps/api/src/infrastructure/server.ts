@@ -3,13 +3,13 @@ import cors from "cors";
 import mongoose from "mongoose";
 
 // Importación de rutas
-import authRoutes from "../interfaces/routes/authRoutes.ts";
-import repairRoutes from "../interfaces/routes/repairRoutes.ts";
-import statsRoutes from "../interfaces/routes/statsRoutes.ts";
-import userRoutes from "../interfaces/routes/userRoutes.ts";
-import adminRoutes from "../interfaces/routes/adminRoutes.ts";
-import supplierRoutes from "../interfaces/routes/supplierRoutes.ts";
-import inventoryRoutes from "../interfaces/routes/inventoryRoutes.ts";
+import authRoutes from "../interfaces/routes/authRoutes.js";
+import repairRoutes from "../interfaces/routes/repairRoutes.js";
+import statsRoutes from "../interfaces/routes/statsRoutes.js";
+import userRoutes from "../interfaces/routes/userRoutes.js";
+import adminRoutes from "../interfaces/routes/adminRoutes.js";
+import supplierRoutes from "../interfaces/routes/supplierRoutes.js";
+import inventoryRoutes from "../interfaces/routes/inventoryRoutes.js";
 
 class Server {
   private app: Application;

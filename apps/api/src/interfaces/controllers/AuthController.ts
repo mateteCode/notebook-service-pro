@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { UserModel } from "../../infrastructure/models/UserModel.ts";
-import { PasswordHasher } from "../../infrastructure/utils/PasswordHasher.ts";
+import { UserModel } from "../../infrastructure/models/UserModel.js";
+import { PasswordHasher } from "../../infrastructure/utils/PasswordHasher.js";
 import jwt from "jsonwebtoken";
 
 export class AuthController {

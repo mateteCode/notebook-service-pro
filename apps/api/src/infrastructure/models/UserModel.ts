@@ -1,5 +1,5 @@
 import { Schema, model, type TypeKeyBaseType } from "mongoose";
-import { UserRole, type IUser } from "../../core/interfaces/IUser.ts";
+import { UserRole, type IUser } from "../../core/interfaces/IUser.js";
 
 const UserSchema = new Schema<IUser>(
   {

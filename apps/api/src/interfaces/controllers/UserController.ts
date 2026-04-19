@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { UserModel } from "../../infrastructure/models/UserModel.ts";
-import { PasswordHasher } from "../../infrastructure/utils/PasswordHasher.ts";
+import { UserModel } from "../../infrastructure/models/UserModel.js";
+import { PasswordHasher } from "../../infrastructure/utils/PasswordHasher.js";
 
 export class UserController {
   static async search(req: Request, res: Response) {

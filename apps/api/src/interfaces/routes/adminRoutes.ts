@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { AdminController } from "../controllers/AdminController.ts";
-import { InventoryController } from "../controllers/InventoryController.ts";
-import { authenticate, authorize } from "../middlewares/AuthMiddleware.ts";
+import { AdminController } from "../controllers/AdminController.js";
+import { InventoryController } from "../controllers/InventoryController.js";
+import { authenticate, authorize } from "../middlewares/AuthMiddleware.js";
 
 const router = Router();
 

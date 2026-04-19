@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { RepairController } from "../controllers/RepairController.ts";
-import { authenticate, authorize } from "../middlewares/AuthMiddleware.ts";
-import { UserRole } from "../../core/interfaces/IUser.ts";
+import { RepairController } from "../controllers/RepairController.js";
+import { authenticate, authorize } from "../middlewares/AuthMiddleware.js";
+import { UserRole } from "../../core/interfaces/IUser.js";
 
 const router = Router();
 

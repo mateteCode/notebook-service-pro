@@ -1,7 +1,7 @@
 import type {
   INotificationProvider,
   INotificationPayload,
-} from "../../core/interfaces/INotificationProvider.ts";
+} from "../../core/interfaces/INotificationProvider.js";
 
 export class WhatsAppProvider implements INotificationProvider {
   async send(payload: INotificationPayload): Promise<void> {

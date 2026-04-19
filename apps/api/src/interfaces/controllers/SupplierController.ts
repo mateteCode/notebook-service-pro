@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { SupplierModel } from "../../infrastructure/models/SupplierModel.ts";
+import { SupplierModel } from "../../infrastructure/models/SupplierModel.js";
 
 export class SupplierController {
   // CREATE

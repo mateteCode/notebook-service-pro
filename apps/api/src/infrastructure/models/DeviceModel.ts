@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { type IDevice, DeviceStatus } from "../../core/interfaces/IDevice.ts";
+import { type IDevice, DeviceStatus } from "../../core/interfaces/IDevice.js";
 
 const DeviceSchema = new Schema<IDevice>(
   {

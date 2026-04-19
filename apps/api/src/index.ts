@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import Server from "./infrastructure/server.ts";
+import Server from "./infrastructure/server.js";
 
 // Configurar variables de entorno antes de arrancar nada
 dotenv.config();

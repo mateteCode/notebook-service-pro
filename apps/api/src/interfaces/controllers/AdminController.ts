@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { BackupService } from "../../infrastructure/services/BackupService.ts";
+import { BackupService } from "../../infrastructure/services/BackupService.js";
 
 export class AdminController {
   static async triggerBackup(req: Request, res: Response) {

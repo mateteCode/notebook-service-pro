@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { InventoryModel } from "../../infrastructure/models/InventoryModel.ts";
+import { InventoryModel } from "../../infrastructure/models/InventoryModel.js";
 
 export class InventoryController {
   // CREATE

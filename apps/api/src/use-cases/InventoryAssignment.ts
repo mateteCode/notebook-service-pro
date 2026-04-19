@@ -1,5 +1,5 @@
-import { InventoryModel } from "../infrastructure/models/InventoryModel.ts";
-import { DeviceModel } from "../infrastructure/models/DeviceModel.ts";
+import { InventoryModel } from "../infrastructure/models/InventoryModel.js";
+import { DeviceModel } from "../infrastructure/models/DeviceModel.js";
 
 /**
  * Servicio para asignar repuestos a una reparación

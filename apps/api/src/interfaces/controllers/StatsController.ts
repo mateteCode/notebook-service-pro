@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { DeviceModel } from "../../infrastructure/models/DeviceModel.ts";
+import { DeviceModel } from "../../infrastructure/models/DeviceModel.js";
 
 export class StatsController {
   static async getCommonFaults(req: Request, res: Response) {
