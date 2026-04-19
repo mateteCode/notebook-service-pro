@@ -47,7 +47,17 @@ class Server {
   }
 
   middlewares() {
-    this.app.use(cors());
+    //this.app.use(cors());
+    this.app.use(
+      cors({
+        origin: [
+          "http://localhost:5173", // Para que te siga funcionando cuando codeas en tu PC
+          "https://notebook-service-pro.vercel.app", // ¡Tu URL real de Vercel!
+        ],
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        credentials: true, // Fundamental para que pasen los Tokens JWT en los headers
+      }),
+    );
     this.app.use(express.json()); // Parseo de body a JSON
   }
 
