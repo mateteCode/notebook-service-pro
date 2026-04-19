@@ -9,6 +9,9 @@ import type { IDevice } from "../../../api/src/core/interfaces/IDevice";
 import type { IUser } from "../../../api/src/core/interfaces/IUser";
 import { Layout } from "../components/Layout.tsx";
 import { AxiosError } from "axios";
+import { useRef } from "react";
+import { Printer } from "lucide-react"; // Importar el ícono
+import { RepairTicket } from "../pages/RepairTicket";
 
 interface IInventoryItem {
   _id: string;
@@ -39,6 +42,21 @@ export const RepairDetailsPage = () => {
   const [showPartsModal, setShowPartsModal] = useState(false);
   const { items: inventoryItems } = useInventory();
   const [partSearch, setPartSearch] = useState("");
+
+  const ticketRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = () => {
+    // Esto es un truco clásico de React para imprimir solo una parte específica
+    const printContent = ticketRef.current?.innerHTML;
+    const originalContent = document.body.innerHTML;
+
+    if (printContent) {
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalContent;
+      window.location.reload(); // Recarga para restaurar los eventos de React
+    }
+  };
 
   // Envolvemos la carga en useCallback para poder llamarla después de actualizar
   const loadDevice = useCallback(async () => {
@@ -142,6 +160,12 @@ export const RepairDetailsPage = () => {
               </div>
             </div>
           </div>
+          <button
+            onClick={handlePrint}
+            className="bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-900 transition"
+          >
+            <Printer size={18} /> Generar Ticket / PDF
+          </button>
 
           {/* NUEVO: LISTA DE REPUESTOS USADOS Y PRESUPUESTO */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -331,6 +355,9 @@ export const RepairDetailsPage = () => {
               </div>
             </div>
           )}
+        </div>
+        <div className="hidden">
+          <RepairTicket ref={ticketRef} device={device} />
         </div>
       </div>
     </Layout>
