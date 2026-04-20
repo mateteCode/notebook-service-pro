@@ -42,7 +42,7 @@ class Server {
       console.log("✅ Database connected");
     } catch (error) {
       console.error("❌ Database connection error:", error);
-      process.exit(1); // Cerramos el proceso si no hay DB
+      process.exit(1);
     }
   }
 
@@ -51,12 +51,12 @@ class Server {
     this.app.use(
       cors({
         origin: [
-          "http://localhost:5173", // Para que te siga funcionando cuando codeas en tu PC
-          "https://notebook-service-pro.vercel.app", // ¡Tu URL real de Vercel!
+          "http://localhost:5173", // Para local
+          "https://notebook-service-pro.vercel.app", // Para Vercel
         ],
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"], // Clave para que deje pasar el Token y el JSON
-        credentials: true, // Fundamental para que pasen los Tokens JWT en los headers
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true,
       }),
     );
     this.app.use(express.json()); // Parseo de body a JSON
@@ -73,7 +73,6 @@ class Server {
     this.app.use(this.apiPaths.inventory, inventoryRoutes);
 
     // Ruta de salud
-
     this.app.get("/api/health", (req, res) => {
       res.status(200).json({ status: "ok", service: "Notebook Service API" });
     });

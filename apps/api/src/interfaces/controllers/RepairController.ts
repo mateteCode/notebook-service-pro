@@ -4,6 +4,7 @@ import { DeviceStatus } from "../../core/interfaces/IDevice.js";
 import { NotificationService } from "../../use-cases/NotifyClient.js";
 import { UserModel } from "../../infrastructure/models/UserModel.js";
 import { InventoryModel } from "../../infrastructure/models/InventoryModel.js";
+import { notifier } from "../../infrastructure/notifications/NotificationManager.js";
 
 export class RepairController {
   // Crear nuevo ingreso
@@ -92,6 +93,34 @@ export class RepairController {
         status: status,
         link: `https://tuapp.com/track/${device._id}`,
       });*/
+
+      // 👇 NUEVA LÓGICA DE NOTIFICACIÓN 👇
+      /*
+      if (device && device.ownerId) {
+        const customer = device.ownerId as any;
+        const trackingLink = `https://notebook-service-pro.vercel.app/login`; // Link a tu Vercel
+
+        // Disparamos la notificación sin bloquear la respuesta HTTP
+        notifier.notifyAll({
+          to: customer.email, // El manager de Email lo tomará, si hubiera uno de WhatsApp tomaría el phoneNumber
+          subject: `Actualización de tu equipo: ${device.brand} ${device.model}`,
+          message: `Hola ${customer.fullName}, el estado de tu equipo ha cambiado a: <b>${status}</b>.<br><br><b>Detalle técnico:</b> ${diagnostic || description}`,
+          link: trackingLink,
+        });
+      }
+      */
+      if (owner) {
+        //const customer = device.ownerId as any;
+        const trackingLink = `https://notebook-service-pro.vercel.app/login`; // Link a tu Vercel
+
+        // Disparamos la notificación sin bloquear la respuesta HTTP
+        notifier.notifyAll({
+          to: owner.email, // El manager de Email lo tomará, si hubiera uno de WhatsApp tomaría el phoneNumber
+          subject: `Actualización de tu equipo: ${device.brand} ${device.model}`,
+          message: `Hola ${owner.fullName}, el estado de tu equipo ha cambiado a: <b>${status}</b>.<br><br><b>Detalle técnico:</b> ${diagnostic || description}`,
+          link: trackingLink,
+        });
+      }
 
       res.json(device);
     } catch (error) {

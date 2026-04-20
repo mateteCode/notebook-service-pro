@@ -211,11 +211,17 @@ export const RepairDetailsPage = () => {
             </h3>
             {/* Usamos el componente que ya tenías */}
             <RepairTimeline
-              history={device.repairHistory.map((h) => ({
-                status: h.status,
-                description: h.description,
-                updatedAt: h.updatedAt.toString(),
-              }))}
+              history={device.repairHistory
+                .map((h) => ({
+                  status: h.status,
+                  description: h.description,
+                  updatedAt: h.updatedAt.toString(),
+                }))
+                .sort(
+                  (a, b) =>
+                    new Date(b.updatedAt).getTime() -
+                    new Date(a.updatedAt).getTime(),
+                )}
             />
           </div>
         </div>
