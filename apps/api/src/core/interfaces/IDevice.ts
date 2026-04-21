@@ -40,4 +40,13 @@ export interface IDevice {
     updatedAt: Date;
     updatedBy: string; // ID del técnico
   }[];
+  images: {
+    url: string;
+    publicId: string;
+    uploadedBy: string;
+    uploadedByName: string;
+    context: string;
+    createdAt: Date;
+  }[];
 }
+// TODO: Verificar tipos de images: {} []

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { RepairController } from "../controllers/RepairController.js";
 import { authenticate, authorize } from "../middlewares/AuthMiddleware.js";
 import { UserRole } from "../../core/interfaces/IUser.js";
+import { upload } from "../../infrastructure/config/cloudinary.js";
 
 const router = Router();
 
@@ -33,5 +34,12 @@ router.post(
 );
 
 router.post("/:repairId/parts", authenticate, RepairController.addPartToRepair);
+
+router.post(
+  "/:id/images",
+  authenticate,
+  upload.single("image"),
+  RepairController.uploadImage,
+);
 
 export default router;

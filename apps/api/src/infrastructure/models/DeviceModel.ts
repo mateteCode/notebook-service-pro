@@ -43,6 +43,20 @@ const DeviceSchema = new Schema<IDevice>(
         updatedBy: { type: String },
       },
     ],
+    images: [
+      {
+        url: { type: String, required: true },
+        publicId: String,
+        uploadedBy: { type: Schema.Types.ObjectId, ref: "User" },
+        uploadedByName: String,
+        context: {
+          type: String,
+          enum: ["RECEPCION", "REPARACION"],
+          required: true,
+        },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,

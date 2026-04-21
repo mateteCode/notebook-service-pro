@@ -210,4 +210,36 @@ export class RepairController {
       res.status(500).json({ message: "Error al obtener la reparación" });
     }
   }
+
+  static async uploadImage(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { context } = req.body;
+      const user = (req as any).user;
+
+      console.log("Usuario que sube:", user);
+
+      if (!req.file)
+        return res.status(400).json({ message: "No se subió ninguna imagen" });
+
+      const device = await DeviceModel.findById(id);
+      if (!device)
+        return res.status(404).json({ message: "Equipo no encontrado" });
+
+      device.images.push({
+        url: req.file.path,
+        publicId: req.file.filename,
+        uploadedBy: user.id,
+        uploadedByName:
+          user.fullName || user.username || user.role || "Técnico",
+        context: context || "REPARACION",
+        createdAt: new Date(),
+      });
+
+      await device.save();
+      res.json({ message: "Imagen guardada", images: device.images });
+    } catch (error) {
+      res.status(500).json({ message: "Error al procesar la imagen" });
+    }
+  }
 }
