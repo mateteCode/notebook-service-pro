@@ -1,12 +1,25 @@
 import { useState, useEffect } from "react";
 import api from "../services/api";
 import { Layout } from "../components/Layout";
-import { UserRole } from "../../../api/src/core/interfaces/IUser";
-import { Users, UserPlus, Edit, Trash2, ShieldCheck } from "lucide-react";
+import { Users, UserPlus, Edit, Trash2, ShieldCheck, X } from "lucide-react";
 
 export const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Estados del Modal
+  const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState("");
+
+  // Estado del Formulario
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phoneNumber: "",
+    role: "CUSTOMER",
+    password: "",
+  });
 
   const fetchUsers = async () => {
     try {
@@ -22,6 +35,55 @@ export const UsersPage = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // --- CONTROLADORES DEL MODAL ---
+  const handleOpenCreate = () => {
+    setFormData({
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+      role: "CUSTOMER",
+      password: "",
+    });
+    setIsEditing(false);
+    setShowModal(true);
+  };
+
+  const handleOpenEdit = (user: any) => {
+    setFormData({
+      fullName: user.fullName,
+      email: user.email,
+      phoneNumber: user.phoneNumber || "",
+      role: user.role,
+      password: "", // Se deja vacío por seguridad, se envía solo si el admin escribe algo nuevo
+    });
+    setEditingId(user._id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (isEditing) {
+        // Al editar, si la contraseña está vacía, la quitamos del payload para no sobrescribirla
+        const payload = { ...formData };
+        if (!payload.password) delete payload.password;
+
+        await api.put(`/users/${editingId}`, payload);
+        alert("Usuario actualizado con éxito");
+      } else {
+        // Al crear, asumo que usas la ruta /auth/register o una específica /users (ajusta según tu backend)
+        await api.post("/users", formData);
+        alert("Usuario creado con éxito");
+      }
+      setShowModal(false);
+      fetchUsers(); // Recargar la tabla
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Error al procesar el usuario");
+      console.error(error);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm("¿Estás seguro de eliminar este usuario?")) return;
@@ -52,7 +114,10 @@ export const UsersPage = () => {
               Administrá el staff técnico y la base de clientes.
             </p>
           </div>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition">
+          <button
+            onClick={handleOpenCreate}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition"
+          >
             <UserPlus size={20} /> Nuevo Usuario
           </button>
         </div>
@@ -92,10 +157,13 @@ export const UsersPage = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {u.phoneNumber}
+                    {u.phoneNumber || "No registrado"}
                   </td>
                   <td className="px-6 py-4 text-right space-x-2">
-                    <button className="text-blue-500 hover:bg-blue-50 p-2 rounded">
+                    <button
+                      onClick={() => handleOpenEdit(u)}
+                      className="text-blue-500 hover:bg-blue-50 p-2 rounded"
+                    >
                       <Edit size={18} />
                     </button>
                     <button
@@ -110,6 +178,117 @@ export const UsersPage = () => {
             </tbody>
           </table>
         </div>
+
+        {/* --- MODAL DE CREACIÓN / EDICIÓN --- */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+              <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 className="font-bold text-lg text-gray-800">
+                  {isEditing ? "Editar Usuario" : "Alta de Nuevo Usuario"}
+                </h3>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-500 hover:text-red-500"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nombre Completo
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                    value={formData.fullName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, fullName: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Correo Electrónico
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Teléfono
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                    value={formData.phoneNumber}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phoneNumber: e.target.value })
+                    }
+                    placeholder="+54 9 11..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Rol en el Sistema
+                  </label>
+                  <select
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                    value={formData.role}
+                    onChange={(e) =>
+                      setFormData({ ...formData, role: e.target.value })
+                    }
+                  >
+                    <option value="CUSTOMER">Cliente</option>
+                    <option value="TECHNICIAN">Técnico</option>
+                    <option value="STOCK_MANAGER">Gestor de Stock</option>
+                    <option value="ADMIN">Administrador</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {isEditing
+                      ? "Nueva Contraseña (Opcional)"
+                      : "Contraseña (Requerida)"}
+                  </label>
+                  <input
+                    type="password"
+                    required={!isEditing}
+                    className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    placeholder={
+                      isEditing
+                        ? "Dejar en blanco para mantener actual"
+                        : "Mínimo 6 caracteres"
+                    }
+                  />
+                </div>
+
+                <div className="pt-4 border-t mt-6">
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition"
+                  >
+                    {isEditing ? "Guardar Cambios" : "Crear Usuario"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );
